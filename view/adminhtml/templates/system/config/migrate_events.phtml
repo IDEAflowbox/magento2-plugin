@@ -1,0 +1,7 @@
+<button class="scalable" type="button" id="<?= $block->getHtmlId() ?>" data-mage-init='{"migrateEvents":{
+    "url": "<?= $block->escapeUrl($block->getAjaxUrl()) ?>",
+    "elementId": "<?= $block->getHtmlId() ?>",
+    "successText": "<?= $block->escapeHtmlAttr(__('Data migrated!')) ?>",
+    "failedText": "<?= $block->escapeHtmlAttr(__('Connection failed! Try again?')) ?>"}}'>
+    <span id="<?= $block->getHtmlId() ?>_result"><?= $block->escapeHtml($block->getButtonLabel()) ?></span>
+</button>

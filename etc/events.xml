@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="controller_front_send_response_before">
+        <observer name="uuidCookieObserver" instance="Omega\Cyberkonsultant\Observer\UuidCookieObserver"/>
+        <observer name="pageViewObserver" instance="Omega\Cyberkonsultant\Observer\PageViewObserver"/>
+    </event>
+    <event name="catalog_controller_product_view">
+        <observer name="productViewObserver" instance="Omega\Cyberkonsultant\Observer\ProductViewObserver"/>
+    </event>
+    <event name="customer_account_edited">
+        <observer name="customerAccountEditedObserver"
+                  instance="Omega\Cyberkonsultant\Observer\CustomerAccountEditedObserver"/>
+    </event>
+    <event name="customer_login">
+        <observer name="customerLoginObserver"
+                  instance="Omega\Cyberkonsultant\Observer\CustomerLoginObserver"/>
+    </event>
+    <event name="checkout_submit_all_after">
+        <observer name="purchaseCompleteObserver"
+                  instance="Omega\Cyberkonsultant\Observer\PurchaseCompleteObserver"/>
+    </event>
+    <event name="wishlist_add_product">
+        <observer name="wishlistAddProductObserver"
+                  instance="Omega\Cyberkonsultant\Observer\WishlistAddProductObserver"/>
+    </event>
+    <event name="checkout_cart_product_add_after">
+        <observer name="checkoutCartProductAddAfter"
+                  instance="Omega\Cyberkonsultant\Observer\CheckoutCartProductAddAfter"/>
+    </event>
+</config>

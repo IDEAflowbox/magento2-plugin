@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job name="cyberkonsultant_feed" instance="Omega\Cyberkonsultant\Cron\Feed" method="execute">
+            <schedule>15 1 * * *</schedule>
+        </job>
+    </group>
+</config>
