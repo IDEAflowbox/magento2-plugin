@@ -2,21 +2,16 @@
 
 namespace Omega\Cyberkonsultant\Observer;
 
-use Cyberkonsultant\DTO\Event;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Omega\Cyberkonsultant\Client\ApiClient;
 use Omega\Cyberkonsultant\Cookie\UuidCookie;
+use Omega\Cyberkonsultant\Publisher\EventPublisher;
+use Omega\Cyberkonsultant\ValueObject\Event;
 use Psr\Log\LoggerInterface;
 
 class WishlistAddProductObserver implements ObserverInterface
 {
-    /**
-     * @var ApiClient
-     */
-    private $apiClient;
-
     /**
      * @var UuidCookie
      */
@@ -27,11 +22,19 @@ class WishlistAddProductObserver implements ObserverInterface
      */
     private $logger;
 
-    public function __construct(ApiClient $apiClient, UuidCookie $uuidCookie, LoggerInterface $logger)
-    {
-        $this->apiClient = $apiClient;
+    /**
+     * @var EventPublisher
+     */
+    private $publisher;
+
+    public function __construct(
+        UuidCookie      $uuidCookie,
+        LoggerInterface $logger,
+        EventPublisher  $publisher
+    ) {
         $this->uuidCookie = $uuidCookie;
         $this->logger = $logger;
+        $this->publisher = $publisher;
     }
 
     public function execute(Observer $observer)
@@ -40,13 +43,14 @@ class WishlistAddProductObserver implements ObserverInterface
         $product = $observer->getData('product');
 
         try {
-            $this->apiClient->trackEvent(
+            $event = new Event(
                 Event::WISHLIST,
                 $this->uuidCookie->get(),
                 $product->getId(),
                 $product->getCategoryIds()[0],
                 $product->getFinalPrice()
             );
+            $this->publisher->publish($event);
         } catch (\Exception $e) {
             $this->logger->error($e);
         }

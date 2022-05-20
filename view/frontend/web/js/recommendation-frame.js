@@ -9,16 +9,17 @@ define([
         fetch('/cyberkonsultant/frontend/recommendationframe')
             .then((res) => res.json())
             .then((json) => {
-                try {
-                    const frames = json.frames.data;
+                const frames = json.frames.data;
 
-                    frames.map((frame) => {
+                frames.map((frame) => {
+                    try {
                         const el = document.evaluate(frame.xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                        $(el).append(mustache.render(frame.html, { products: frame.products }));
-                    });
-                } catch (e) {
-                    console.log(e);
-                }
+                        const products = frame.products.map((p) => ({ ...p, url: p.url + '?source=recommendation_frame&ts=' + (new Date()).getTime() }));
+                        $(el).append(mustache.render(frame.html, { products: products }));
+                    } catch (e) {
+                        console.log(e);
+                    }
+                });
             })
             .then(() => {
                 const element = document.querySelector('.cyberkonsultant--glider');

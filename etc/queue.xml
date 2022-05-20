@@ -16,4 +16,12 @@
                 consumerInstance="Magento\Framework\MessageQueue\Consumer"
         />
     </broker>
+    <broker topic="cyberkonsultant.track.events" type="db" exchange="cyberkonsultant.track.events.exchange">
+        <queue
+                consumer="cyberkonsultant.track.events"
+                name="cyberkonsultant.track.events.queue"
+                handler="Omega\Cyberkonsultant\Consumer\TrackEventsConsumer::process"
+                consumerInstance="Magento\Framework\MessageQueue\Consumer"
+        />
+    </broker>
 </config>

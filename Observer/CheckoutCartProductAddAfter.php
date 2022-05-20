@@ -2,21 +2,16 @@
 
 namespace Omega\Cyberkonsultant\Observer;
 
-use Cyberkonsultant\DTO\Event;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Omega\Cyberkonsultant\Client\ApiClient;
 use Omega\Cyberkonsultant\Cookie\UuidCookie;
+use Omega\Cyberkonsultant\Publisher\EventPublisher;
+use Omega\Cyberkonsultant\ValueObject\Event;
 use Psr\Log\LoggerInterface;
 
 class CheckoutCartProductAddAfter implements ObserverInterface
 {
-    /**
-     * @var ApiClient
-     */
-    private $apiClient;
-
     /**
      * @var UuidCookie
      */
@@ -27,11 +22,16 @@ class CheckoutCartProductAddAfter implements ObserverInterface
      */
     private $logger;
 
-    public function __construct(ApiClient $apiClient, UuidCookie $uuidCookie, LoggerInterface $logger)
+    /**
+     * @var EventPublisher
+     */
+    private $publisher;
+
+    public function __construct(UuidCookie $uuidCookie, LoggerInterface $logger, EventPublisher $publisher)
     {
-        $this->apiClient = $apiClient;
         $this->uuidCookie = $uuidCookie;
         $this->logger = $logger;
+        $this->publisher = $publisher;
     }
 
     public function execute(Observer $observer)
@@ -41,26 +41,19 @@ class CheckoutCartProductAddAfter implements ObserverInterface
             if ($option = $item->getOptionByCode('simple_product')) {
                 /** @var Product $product */
                 $product = $option->getProduct();
-
-                $this->apiClient->trackEvent(
-                    Event::CART,
-                    $this->uuidCookie->get(),
-                    $product->getId(),
-                    $product->getCategoryIds()[0],
-                    $product->getPrice()
-                );
             } else {
                 /** @var Product $product */
                 $product = $item->getProduct();
-
-                $this->apiClient->trackEvent(
-                    Event::CART,
-                    $this->uuidCookie->get(),
-                    $product->getId(),
-                    $product->getCategoryIds()[0],
-                    $product->getPrice()
-                );
             }
+
+            $event = new Event(
+                Event::CART,
+                $this->uuidCookie->get(),
+                $product->getId(),
+                $product->getCategoryIds()[0],
+                $product->getPrice()
+            );
+            $this->publisher->publish($event);
         } catch (\Exception $e) {
             $this->logger->error($e);
         }

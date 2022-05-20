@@ -2,15 +2,14 @@
 
 namespace Omega\Cyberkonsultant\Observer;
 
-use Cyberkonsultant\DTO\Event;
-use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Catalog\Model\Product;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Sales\Api\Data\OrderInterface;
 use Omega\Cyberkonsultant\Client\ApiClient;
 use Omega\Cyberkonsultant\Cookie\UuidCookie;
+use Omega\Cyberkonsultant\Publisher\EventPublisher;
+use Omega\Cyberkonsultant\ValueObject\Event;
 use Psr\Log\LoggerInterface;
 
 class PurchaseCompleteObserver implements ObserverInterface
@@ -26,25 +25,25 @@ class PurchaseCompleteObserver implements ObserverInterface
     private $uuidCookie;
 
     /**
-     * @var ProductRepositoryInterface
-     */
-    private $productRepository;
-
-    /**
      * @var LoggerInterface
      */
     private $logger;
 
+    /**
+     * @var EventPublisher
+     */
+    private $publisher;
+
     public function __construct(
-        ApiClient                  $apiClient,
-        UuidCookie                 $uuidCookie,
-        ProductRepositoryInterface $productRepository,
-        LoggerInterface            $logger
+        ApiClient       $apiClient,
+        UuidCookie      $uuidCookie,
+        LoggerInterface $logger,
+        EventPublisher $publisher
     ) {
         $this->apiClient = $apiClient;
         $this->uuidCookie = $uuidCookie;
-        $this->productRepository = $productRepository;
         $this->logger = $logger;
+        $this->publisher = $publisher;
     }
 
     public function execute(Observer $observer)
@@ -59,27 +58,19 @@ class PurchaseCompleteObserver implements ObserverInterface
             foreach ($quote->getAllVisibleItems() as $item) {
                 if ($option = $item->getOptionByCode('simple_product')) {
                     $product = $option->getProduct();
-
-                    $this->apiClient->trackEvent(
-                        Event::PURCHASE,
-                        $this->uuidCookie->get(),
-                        $product->getId(),
-                        $product->getCategoryIds()[0],
-                        $item->getPriceInclTax(),
-                        $order->getQuoteId()
-                    );
                 } else {
                     $product = $item->getProduct();
-
-                    $this->apiClient->trackEvent(
-                        Event::PURCHASE,
-                        $this->uuidCookie->get(),
-                        $product->getId(),
-                        $product->getCategoryIds()[0],
-                        $item->getPriceInclTax(),
-                        $order->getQuoteId()
-                    );
                 }
+
+                $event = new Event(
+                    Event::PURCHASE,
+                    $this->uuidCookie->get(),
+                    $product->getId(),
+                    $product->getCategoryIds()[0],
+                    $item->getPriceInclTax(),
+                    $order->getQuoteId()
+                );
+                $this->publisher->publish($event);
             }
 
             $this->apiClient->updateUserFromOrder($this->uuidCookie->get(), $order);
