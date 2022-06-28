@@ -1,7 +1,6 @@
 var config = {
     paths: {
-        mustache: 'Omega_Cyberkonsultant/js/libs/mustache',
-        glider: 'Omega_Cyberkonsultant/js/libs/glider'
+        ideaflowbox_slider: 'Omega_Cyberkonsultant/js/libs/flowbox/slider/flowbox',
     },
     deps: [
         'Omega_Cyberkonsultant/js/recommendation-frame'
