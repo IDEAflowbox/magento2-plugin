@@ -41,6 +41,11 @@ class Event
     private $cartId;
 
     /**
+     * @var string|null
+     */
+    private $frameId;
+
+    /**
      * @param string $type
      * @param string $uuid
      * @param int|null $productId
@@ -49,12 +54,13 @@ class Event
      * @param int|null $cartId
      */
     public function __construct(
-        string $type,
-        string $uuid,
-        ?int   $productId,
-        ?int   $categoryId = null,
-        ?float $price = null,
-        ?int   $cartId = null
+        string  $type,
+        string  $uuid,
+        ?int    $productId,
+        ?int    $categoryId = null,
+        ?float  $price = null,
+        ?int    $cartId = null,
+        ?string $frameId = null
     ) {
         $this->type = $type;
         $this->uuid = $uuid;
@@ -62,6 +68,7 @@ class Event
         $this->categoryId = $categoryId;
         $this->price = $price;
         $this->cartId = $cartId;
+        $this->frameId = $frameId;
     }
 
     /**
@@ -172,6 +179,24 @@ class Event
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getFrameId(): ?string
+    {
+        return $this->frameId;
+    }
+
+    /**
+     * @param string|null $frameId
+     * @return Event
+     */
+    public function setFrameId(?string $frameId): Event
+    {
+        $this->frameId = $frameId;
+        return $this;
+    }
+
     public function __toArray(): array
     {
         return [
@@ -180,6 +205,7 @@ class Event
             'productId' => $this->getProductId(),
             'categoryId' => $this->getCategoryId(),
             'price' => $this->getPrice(),
+            'frameId' => $this->getFrameId(),
         ];
     }
 }

@@ -84,12 +84,15 @@ class ApiClient
     }
 
     /**
+     * TODO: Use Event ValueObject
      * @param $type
      * @param $userId
      * @param $productId
      * @param $categoryId
      * @param $price
      * @param null $cartId
+     * @param \DateTime|null $cartId
+     * @param string|null $frameId
      * @return void
      * @throws \Cyberkonsultant\Exception\ClientException
      * @throws \Cyberkonsultant\Exception\CyberkonsultantSDKException
@@ -103,7 +106,8 @@ class ApiClient
         $categoryId,
         $price,
         $cartId = null,
-        \DateTime $eventTime = null
+        \DateTime $eventTime = null,
+        $frameId = null
     ) {
         $eventBuilder = new EventBuilder();
         $event = $eventBuilder
@@ -119,6 +123,10 @@ class ApiClient
 
         if ($eventTime) {
             $event->setEventTime($eventTime);
+        }
+
+        if ($frameId) {
+            $event->setFrameId($frameId);
         }
 
         $this->getShopScope()->event->create($event->getResult());

@@ -81,7 +81,9 @@ class PageViewObserver implements ObserverInterface
                         $this->uuidCookie->get(),
                         $id,
                         $product->getCategoryIds()[0],
-                        $product->getFinalPrice()
+                        $product->getFinalPrice(),
+                        null,
+                        $request->getParam('frame_id') ?: null
                     );
                     $this->publisher->publish($event);
                 }

@@ -26,7 +26,10 @@ class TrackEventsConsumer
                 $event->getUuid(),
                 $event->getProductId(),
                 $event->getCategoryId(),
-                $event->getPrice()
+                $event->getPrice(),
+                null,
+                null,
+                $event->getFrameId()
             );
         } catch (\Exception $e) {
             $this->logger->critical($e);
