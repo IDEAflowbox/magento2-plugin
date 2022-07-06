@@ -27,7 +27,7 @@ class TrackEventsConsumer
                 $event->getProductId(),
                 $event->getCategoryId(),
                 $event->getPrice(),
-                null,
+                $event->getCartId(),
                 null,
                 $event->getFrameId()
             );
