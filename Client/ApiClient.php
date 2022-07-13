@@ -55,6 +55,22 @@ class ApiClient
         return $this->getShopScope()->product->createMany($products);
     }
 
+    public function beginProductsTransaction(): string
+    {
+        return $this->getShopScope()->productsTransaction->beginTransaction();
+    }
+
+    public function appendProducts(string $transactionId, array $mageProducts): SuccessResponse
+    {
+        $products = $this->productMapper->mapToCKProducts($mageProducts);
+        return $this->getShopScope()->productsTransaction->append($transactionId, $products);
+    }
+
+    public function performProductsTransaction(string $transactionId): SuccessResponse
+    {
+        return $this->getShopScope()->productsTransaction->perform($transactionId);
+    }
+
     /**
      * @param CategoryInterface[] $mageCategories
      * @return SuccessResponse

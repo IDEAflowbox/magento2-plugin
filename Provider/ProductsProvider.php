@@ -64,7 +64,7 @@ class ProductsProvider
      * @return ProductSearchResultsInterface
      * @throws NoSuchEntityException
      */
-    public function getProductData()
+    public function getProductData($currentPage = 1, $pageSize = 50)
     {
         $filterGroup = $this->filterGroup->setFilters([
             $this->filterBuilder
@@ -79,7 +79,10 @@ class ProductsProvider
                 ->create(),
         ]);
 
-        $criteria = $this->criteria->setFilterGroups([$filterGroup]);
+        $criteria = $this->criteria
+            ->setFilterGroups([$filterGroup])
+            ->setCurrentPage($currentPage)
+            ->setPageSize($pageSize);
         return $this->productRepository->getList($criteria->create());
     }
 }

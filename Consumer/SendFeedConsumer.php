@@ -36,10 +36,18 @@ class SendFeedConsumer
         try {
             $attributes = $this->attributesProvider->getAttributes();
             $this->apiClient->sendAttributes($attributes->getItems());
+
             $categories = $this->categoriesProvider->getCategories();
             $this->apiClient->sendCategories($categories->getItems());
-            $products = $this->productsProvider->getProductData();
-            $this->apiClient->sendProducts($products->getItems());
+
+            $transactionId = $this->apiClient->beginProductsTransaction();
+            $page = 1;
+            do {
+                $products = $this->productsProvider->getProductData($page);
+                $this->apiClient->appendProducts($transactionId, $products->getItems());
+                $page = $products->getSearchCriteria()->getCurrentPage() + 1;
+            } while ($products->getSearchCriteria()->getCurrentPage() < ($products->getTotalCount() / $products->getSearchCriteria()->getPageSize()));
+            $this->apiClient->performProductsTransaction($transactionId);
         } catch (\Exception $e) {
             $this->logger->error($e);
         }
