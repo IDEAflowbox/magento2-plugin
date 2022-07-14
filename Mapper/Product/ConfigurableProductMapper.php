@@ -49,12 +49,16 @@ class ConfigurableProductMapper implements ProductMapperInterface
 
         $result = [];
         foreach ($simpleProducts as $simpleProduct) {
-            $product = $this->simpleProductMapper->map($simpleProduct)[0];
-            $product->setUrl($mageProduct->getProductUrl());
-            $product->setDescription($mageProduct->getDescription());
-            $product->setName($mageProduct->getName());
-            $product->setParentId($mageProduct->getId());
-            $result[] = $product;
+            try {
+                $product = $this->simpleProductMapper->map($simpleProduct)[0];
+                $product->setUrl($mageProduct->getProductUrl());
+                $product->setDescription($mageProduct->getDescription());
+                $product->setName($mageProduct->getName());
+                $product->setParentId($mageProduct->getId());
+                $result[] = $product;
+            } catch (\Exception $e) {
+                continue;
+            }
         }
         return $result;
     }
