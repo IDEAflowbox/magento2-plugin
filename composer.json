@@ -6,7 +6,7 @@
     "license": "GPL-3.0-or-later",
     "require": {
         "php": ">=7.2",
-        "cyberkonsultant/php-instance-sdk": "^1.5.5"
+        "cyberkonsultant/php-instance-sdk": "^1.5.7"
     },
     "autoload": {
         "files": [

@@ -18,7 +18,6 @@ use Omega\Cyberkonsultant\Helper\Configuration;
 use Omega\Cyberkonsultant\Mapper\AttributeMapper;
 use Omega\Cyberkonsultant\Mapper\CategoryMapper;
 use Omega\Cyberkonsultant\Mapper\ProductMapper;
-use Unirest\Request;
 
 class ApiClient
 {
@@ -40,9 +39,6 @@ class ApiClient
         $this->attributeMapper = $attributeMapper;
         $this->configuration = $configuration;
         $this->countryInformationAcquirer = $countryInformationAcquirer;
-
-        Request::timeout(30);
-        Request::verifyPeer(false);
     }
 
     /**
@@ -294,9 +290,11 @@ class ApiClient
      */
     private function createClient()
     {
-        return new Cyberkonsultant([
+        $sdk = new Cyberkonsultant([
             'api_url' => $this->configuration->getGeneralConfig('api_host'),
             'access_token' => $this->configuration->getGeneralConfig('api_key'),
         ]);
+        $sdk->setTimeout(30);
+        return $sdk;
     }
 }
