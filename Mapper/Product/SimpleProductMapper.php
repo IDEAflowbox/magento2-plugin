@@ -8,7 +8,9 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Helper\Data;
 use Magento\CatalogInventory\Api\StockStateInterface;
+use Magento\Framework\App\ObjectManager;
 use Magento\Store\Model\StoreManagerInterface;
+use Psr\Log\LoggerInterface;
 
 class SimpleProductMapper implements ProductMapperInterface
 {
@@ -95,6 +97,16 @@ class SimpleProductMapper implements ProductMapperInterface
 
     private function getStockQty(ProductInterface $product): int
     {
-        return (int)$this->stockState->getStockQty($product->getId(), $product->getStore()->getWebsiteId());
+        $objectManager = ObjectManager::getInstance();
+        $stockState = $objectManager->get('\Magento\InventorySalesAdminUi\Model\GetSalableQuantityDataBySku');
+        $qty = $stockState->execute($product->getSku());
+
+        $ret = 0;
+        foreach ($qty as $q) {
+            $ret += $q['qty'];
+        }
+
+        ObjectManager::getInstance()->get(LoggerInterface::class)->info((string) $ret);
+        return $ret;
     }
 }
