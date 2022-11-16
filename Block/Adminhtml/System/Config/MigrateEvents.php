@@ -14,7 +14,7 @@ class MigrateEvents extends Field
      */
     private $configuration;
 
-    public function __construct(Context $context, array $data = [], Configuration $configuration)
+    public function __construct(Context $context, Configuration $configuration, array $data = [])
     {
         parent::__construct($context, $data);
         $this->configuration = $configuration;
