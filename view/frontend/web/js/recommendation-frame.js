@@ -4,7 +4,7 @@ define([
 ], function ($) {
     "use strict";
 
-    fetch('/cyberkonsultant/frontend/recommendationframe')
+    fetch('/cyberkonsultant/frontend/recommendationframe', { method: 'POST' })
         .then((res) => res.json())
         .then((json) => {
             const frames = json.frames.data;

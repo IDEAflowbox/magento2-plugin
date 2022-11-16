@@ -4,7 +4,7 @@ namespace Omega\Cyberkonsultant\Controller\Frontend;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\View\Result\PageFactory;
 use Omega\Cyberkonsultant\Client\ApiClient;
@@ -13,7 +13,7 @@ use Omega\Cyberkonsultant\Mapper\ProductMapper;
 use Omega\Cyberkonsultant\Provider\CategoriesProvider;
 use Omega\Cyberkonsultant\Provider\ProductsProvider;
 
-class RecommendationFrame extends Action implements HttpGetActionInterface
+class RecommendationFrame extends Action implements HttpPostActionInterface
 {
     /**
      * @var PageFactory
