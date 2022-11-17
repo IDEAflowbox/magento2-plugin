@@ -9,7 +9,7 @@ interface ProductMapperInterface
 {
     /**
      * @param ProductInterface $mageProduct
-     * @return Product[]
+     * @return Product
      */
-    public function map(ProductInterface $mageProduct): array;
+    public function map(ProductInterface $mageProduct): Product;
 }

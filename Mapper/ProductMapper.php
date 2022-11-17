@@ -33,7 +33,7 @@ class ProductMapper
         $products = [];
 
         foreach ($mageProducts as $mageProduct) {
-            if ($mageProduct->getVisibility() < 2 || !$mageProduct->isSaleable()) {
+            if (!$mageProduct->isSaleable()) {
                 continue;
             }
 
@@ -42,10 +42,10 @@ class ProductMapper
             switch ($mageProduct->getTypeId()) {
                 // TODO: FIND CONSTANTS FOR PRODUCT TYPES IN MAGENTO... IF YOU CAN
                 case 'configurable':
-                    $products = array_merge($products, $this->configurableProductMapper->map($mageProduct));
+                    $products[] = $this->configurableProductMapper->map($mageProduct);
                     break;
                 case 'simple':
-                    $products = array_merge($products, $this->simpleProductMapper->map($mageProduct));
+                    $products[] = $this->simpleProductMapper->map($mageProduct);
                     break;
                 default:
                     $this->logger->debug(

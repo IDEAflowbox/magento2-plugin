@@ -3,34 +3,37 @@
 namespace Omega\Cyberkonsultant\Mapper\Product;
 
 use Cyberkonsultant\Builder\ProductBuilder;
+use Cyberkonsultant\DTO\Product;
 use Magento\Catalog\Api\Data\ProductAttributeInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Helper\Data;
 use Magento\CatalogInventory\Api\StockStateInterface;
-use Magento\Framework\App\ObjectManager;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Store\Model\StoreManagerInterface;
-use Psr\Log\LoggerInterface;
 
 class SimpleProductMapper implements ProductMapperInterface
 {
     private $storeManager;
     private $taxHelper;
     private $stockState;
+    private $configurableType;
 
     public function __construct(
         StoreManagerInterface $storeManager,
         Data $taxHelper,
-        StockStateInterface $stockState
+        StockStateInterface $stockState,
+        Configurable $configurableType
     ) {
         $this->storeManager = $storeManager;
         $this->taxHelper = $taxHelper;
         $this->stockState = $stockState;
+        $this->configurableType = $configurableType;
     }
 
     /**
      * @inheritdoc
      */
-    public function map(ProductInterface $mageProduct): array
+    public function map(ProductInterface $mageProduct): Product
     {
         $productBuilder = new ProductBuilder();
 
@@ -55,6 +58,12 @@ class SimpleProductMapper implements ProductMapperInterface
             $productBuilder->setDescription($description->getValue());
         }
 
+        $parentIds = $this->configurableType->getParentIdsByChild($mageProduct->getId());
+        $parentId = array_shift($parentIds);
+
+        if ($parentId) {
+            $productBuilder->setParentId($parentId);
+        }
 
         foreach ($mageProduct->getCategoryIds() ?: [] as $categoryId) {
             $productBuilder->addCategory($categoryId);
@@ -76,7 +85,7 @@ class SimpleProductMapper implements ProductMapperInterface
 
         }
 
-        return [$productBuilder->getResult()];
+        return $productBuilder->getResult();
     }
 
     private function getRegularPrice(ProductInterface $product): float
@@ -92,16 +101,6 @@ class SimpleProductMapper implements ProductMapperInterface
 
     private function getStockQty(ProductInterface $product): int
     {
-        $objectManager = ObjectManager::getInstance();
-        $stockState = $objectManager->get('\Magento\InventorySalesAdminUi\Model\GetSalableQuantityDataBySku');
-        $qty = $stockState->execute($product->getSku());
-
-        $ret = 0;
-        foreach ($qty as $q) {
-            $ret += $q['qty'];
-        }
-
-        ObjectManager::getInstance()->get(LoggerInterface::class)->info((string) $ret);
-        return $ret;
+        return (int)$this->stockState->getStockQty($product->getId(), $product->getStore()->getWebsiteId());
     }
 }
