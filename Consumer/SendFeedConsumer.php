@@ -3,10 +3,11 @@ declare(strict_types=1);
 
 namespace Omega\Cyberkonsultant\Consumer;
 
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Omega\Cyberkonsultant\Client\ApiClient;
 use Omega\Cyberkonsultant\Provider\AttributesProvider;
 use Omega\Cyberkonsultant\Provider\CategoriesProvider;
-use Omega\Cyberkonsultant\Provider\ProductsProvider;
 use Psr\Log\LoggerInterface;
 
 class SendFeedConsumer
@@ -14,21 +15,21 @@ class SendFeedConsumer
     private $logger;
     private $attributesProvider;
     private $categoriesProvider;
-    private $productsProvider;
     private $apiClient;
+    private $collectionFactory;
 
     public function __construct(
         AttributesProvider $attributesProvider,
         CategoriesProvider $categoriesProvider,
-        ProductsProvider   $productsProvider,
         ApiClient          $apiClient,
-        LoggerInterface    $logger
+        LoggerInterface    $logger,
+        CollectionFactory  $collectionFactory
     ) {
         $this->attributesProvider = $attributesProvider;
         $this->categoriesProvider = $categoriesProvider;
-        $this->productsProvider = $productsProvider;
         $this->apiClient = $apiClient;
         $this->logger = $logger;
+        $this->collectionFactory = $collectionFactory;
     }
 
     public function process($message)
@@ -41,12 +42,19 @@ class SendFeedConsumer
             $this->apiClient->sendCategories($categories->getItems());
 
             $transactionId = $this->apiClient->beginProductsTransaction();
-            $page = 1;
-            do {
-                $products = $this->productsProvider->getProductData($page);
-                $this->apiClient->appendProducts($transactionId, $products->getItems());
-                $page = $products->getSearchCriteria()->getCurrentPage() + 1;
-            } while ($products->getSearchCriteria()->getCurrentPage() < ($products->getTotalCount() / $products->getSearchCriteria()->getPageSize()));
+
+            $collection = $this->collectionFactory->create();
+            $collection->addAttributeToSelect('*');
+//            $collection->addAttributeToFilter(ProductInterface::VISIBILITY, ['in' => [3, 2, 4]]);
+            $collection->addAttributeToFilter(ProductInterface::STATUS, 1);
+            $collection->setPageSize(50);
+
+            for ($page = 1; $page <= $collection->getLastPageNumber(); $page++) {
+                $collection->setCurPage($page);
+                $this->apiClient->appendProducts($transactionId, $collection);
+                $collection->clear();
+            }
+
             $this->apiClient->performProductsTransaction($transactionId);
         } catch (\Exception $e) {
             $this->logger->error($e);

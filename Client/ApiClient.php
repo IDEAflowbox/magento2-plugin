@@ -60,7 +60,7 @@ class ApiClient
         return $this->getShopScope()->productsTransaction->beginTransaction();
     }
 
-    public function appendProducts(string $transactionId, array $mageProducts): SuccessResponse
+    public function appendProducts(string $transactionId, $mageProducts): SuccessResponse
     {
         $products = $this->productMapper->mapToCKProducts($mageProducts);
         return $this->getShopScope()->productsTransaction->append($transactionId, $products);

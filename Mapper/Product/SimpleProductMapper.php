@@ -5,7 +5,6 @@ namespace Omega\Cyberkonsultant\Mapper\Product;
 use Cyberkonsultant\Builder\ProductBuilder;
 use Magento\Catalog\Api\Data\ProductAttributeInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Helper\Data;
 use Magento\CatalogInventory\Api\StockStateInterface;
 use Magento\Framework\App\ObjectManager;
@@ -17,18 +16,15 @@ class SimpleProductMapper implements ProductMapperInterface
     private $storeManager;
     private $taxHelper;
     private $stockState;
-    private $productRepository;
 
     public function __construct(
         StoreManagerInterface $storeManager,
         Data $taxHelper,
-        StockStateInterface $stockState,
-        ProductRepositoryInterface $productRepository
+        StockStateInterface $stockState
     ) {
         $this->storeManager = $storeManager;
         $this->taxHelper = $taxHelper;
         $this->stockState = $stockState;
-        $this->productRepository = $productRepository;
     }
 
     /**
@@ -36,7 +32,6 @@ class SimpleProductMapper implements ProductMapperInterface
      */
     public function map(ProductInterface $mageProduct): array
     {
-        $mageProduct = $this->productRepository->getById($mageProduct->getId());
         $productBuilder = new ProductBuilder();
 
         $description = $mageProduct->getCustomAttribute(ProductAttributeInterface::CODE_DESCRIPTION);

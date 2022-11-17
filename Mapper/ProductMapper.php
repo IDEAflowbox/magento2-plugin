@@ -28,7 +28,7 @@ class ProductMapper
      * @param ProductInterface[] $mageProducts
      * @return Product[]
      */
-    public function mapToCKProducts(array $mageProducts): array
+    public function mapToCKProducts($mageProducts): array
     {
         $products = [];
 

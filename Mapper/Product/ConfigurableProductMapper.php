@@ -6,6 +6,7 @@ use Cyberkonsultant\Builder\ProductBuilder;
 use Cyberkonsultant\DTO\Product;
 use Magento\Catalog\Api\Data\ProductAttributeInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Helper\Data;
 use Magento\CatalogInventory\Api\StockStateInterface;
 use Magento\Store\Model\StoreManagerInterface;
@@ -16,17 +17,20 @@ class ConfigurableProductMapper implements ProductMapperInterface
     private $taxHelper;
     private $stockState;
     private $simpleProductMapper;
+    private $productRepository;
 
     public function __construct(
         StoreManagerInterface $storeManager,
         Data                  $taxHelper,
         StockStateInterface   $stockState,
-        SimpleProductMapper   $simpleProductMapper
+        SimpleProductMapper   $simpleProductMapper,
+        ProductRepositoryInterface $productRepository
     ) {
         $this->storeManager = $storeManager;
         $this->taxHelper = $taxHelper;
         $this->stockState = $stockState;
         $this->simpleProductMapper = $simpleProductMapper;
+        $this->productRepository = $productRepository;
     }
 
     /**
@@ -45,12 +49,12 @@ class ConfigurableProductMapper implements ProductMapperInterface
      */
     private function mapChildrenProducts(ProductInterface $mageProduct): array
     {
-        $simpleProducts = $mageProduct->getTypeInstance()->getUsedProducts($mageProduct);
+        $simpleProducts = $mageProduct->getTypeInstance()->getChildrenIds($mageProduct->getId());
 
         $result = [];
-        foreach ($simpleProducts as $simpleProduct) {
+        foreach ($simpleProducts as $simpleProductId) {
             try {
-                $product = $this->simpleProductMapper->map($simpleProduct)[0];
+                $product = $this->simpleProductMapper->map($this->productRepository->getById($simpleProductId))[0];
                 $product->setUrl($mageProduct->getProductUrl());
                 $product->setDescription($mageProduct->getDescription());
                 $product->setName($mageProduct->getName());
@@ -131,4 +135,3 @@ class ConfigurableProductMapper implements ProductMapperInterface
         return $totalStock;
     }
 }
-
