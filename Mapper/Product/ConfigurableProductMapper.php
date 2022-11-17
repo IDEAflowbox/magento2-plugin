@@ -75,12 +75,8 @@ class ConfigurableProductMapper implements ProductMapperInterface
 
     private function getRegularPrice(ProductInterface $mageProduct): float
     {
-        try {
-            $basePrice = $mageProduct->getPriceInfo()->getPrice('regular_price');
-            return $basePrice->getMinRegularAmount()->getValue();
-        } catch (\Throwable $e) {
-            return $mageProduct->getPrice();
-        }
+        $basePrice = $mageProduct->getPriceInfo()->getPrice('regular_price');
+        return $basePrice->getMinRegularAmount()->getValue();
     }
 
     private function getMediaBaseUrl(): string

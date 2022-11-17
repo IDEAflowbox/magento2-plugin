@@ -37,20 +37,24 @@ class ProductMapper
                 continue;
             }
 
-            // TODO: IF YOU ARE READING THIS -> YOU CAN CONSIDER FACTORY / FACTORY METHOD OR OTHER FANCY STUFF :)
-            // TODO: BUT DOES IT MAKE SENSE TO PLAY WITH THIS IN MAGENTO ? FOR ME NOT :)
-            switch ($mageProduct->getTypeId()) {
-                // TODO: FIND CONSTANTS FOR PRODUCT TYPES IN MAGENTO... IF YOU CAN
-                case 'configurable':
-                    $products[] = $this->configurableProductMapper->map($mageProduct);
-                    break;
-                case 'simple':
-                    $products[] = $this->simpleProductMapper->map($mageProduct);
-                    break;
-                default:
-                    $this->logger->debug(
-                        sprintf('Product mapper for type: "%s" was not found.', $mageProduct->getTypeId())
-                    );
+            try {
+                // TODO: IF YOU ARE READING THIS -> YOU CAN CONSIDER FACTORY / FACTORY METHOD OR OTHER FANCY STUFF :)
+                // TODO: BUT DOES IT MAKE SENSE TO PLAY WITH THIS IN MAGENTO ? FOR ME NOT :)
+                switch ($mageProduct->getTypeId()) {
+                    // TODO: FIND CONSTANTS FOR PRODUCT TYPES IN MAGENTO... IF YOU CAN
+                    case 'configurable':
+                        $products[] = $this->configurableProductMapper->map($mageProduct);
+                        break;
+                    case 'simple':
+                        $products[] = $this->simpleProductMapper->map($mageProduct);
+                        break;
+                    default:
+                        $this->logger->debug(
+                            sprintf('Product mapper for type: "%s" was not found.', $mageProduct->getTypeId())
+                        );
+                }
+            } catch (\Throwable $e) {
+                $this->logger->error(sprintf('Product with id: "%s" is invalid', $mageProduct->getId()));
             }
         }
 
