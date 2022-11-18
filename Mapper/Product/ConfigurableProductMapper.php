@@ -7,6 +7,7 @@ use Cyberkonsultant\DTO\Product;
 use Magento\Catalog\Api\Data\ProductAttributeInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Helper\Data;
+use Magento\Catalog\Helper\Image;
 use Magento\CatalogInventory\Api\StockStateInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
@@ -15,15 +16,18 @@ class ConfigurableProductMapper implements ProductMapperInterface
     private $storeManager;
     private $taxHelper;
     private $stockState;
+    private $imageHelper;
 
     public function __construct(
         StoreManagerInterface $storeManager,
         Data                  $taxHelper,
-        StockStateInterface   $stockState
+        StockStateInterface   $stockState,
+        Image                 $imageHelper
     ) {
         $this->storeManager = $storeManager;
         $this->taxHelper = $taxHelper;
         $this->stockState = $stockState;
+        $this->imageHelper = $imageHelper;
     }
 
     /**
@@ -40,7 +44,7 @@ class ConfigurableProductMapper implements ProductMapperInterface
             ->setId($mageProduct->getId())
             ->setUrl($mageProduct->getProductUrl())
             ->setNetPrice($this->getRegularPrice($mageProduct))
-            ->setImage($this->getMediaBaseUrl() . 'pub/media/catalog/product' . $mageProduct->getImage())
+            ->setImage($this->imageHelper->init($mageProduct, 'product_thumbnail_image')->getUrl())
             ->setGrossPrice($this->taxHelper->getTaxPrice($mageProduct, $this->getRegularPrice($mageProduct), true))
             ->setGrossSalePrice(
                 $this->getRegularPrice($mageProduct) !== $mageProduct->getFinalPrice() ? $mageProduct->getFinalPrice(
