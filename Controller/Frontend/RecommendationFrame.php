@@ -5,6 +5,9 @@ namespace Omega\Cyberkonsultant\Controller\Frontend;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\CsrfAwareActionInterface;
+use Magento\Framework\App\Request\InvalidRequestException;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\View\Result\PageFactory;
 use Omega\Cyberkonsultant\Client\ApiClient;
@@ -13,7 +16,7 @@ use Omega\Cyberkonsultant\Mapper\ProductMapper;
 use Omega\Cyberkonsultant\Provider\CategoriesProvider;
 use Omega\Cyberkonsultant\Provider\ProductsProvider;
 
-class RecommendationFrame extends Action implements HttpPostActionInterface
+class RecommendationFrame extends Action implements HttpPostActionInterface, CsrfAwareActionInterface
 {
     /**
      * @var PageFactory
@@ -85,5 +88,15 @@ class RecommendationFrame extends Action implements HttpPostActionInterface
         }
 
         return $this->jsonFactory->create()->setData($result);
+    }
+
+    public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
+    {
+        return null;
+    }
+
+    public function validateForCsrf(RequestInterface $request): ?bool
+    {
+        return true;
     }
 }
