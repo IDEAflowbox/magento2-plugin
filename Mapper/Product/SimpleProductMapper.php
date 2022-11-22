@@ -10,7 +10,10 @@ use Magento\Catalog\Helper\Data;
 use Magento\Catalog\Helper\Image;
 use Magento\CatalogInventory\Api\StockStateInterface;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Module\Manager;
 use Magento\Store\Model\StoreManagerInterface;
+use Psr\Log\LoggerInterface;
 
 class SimpleProductMapper implements ProductMapperInterface
 {
@@ -19,19 +22,22 @@ class SimpleProductMapper implements ProductMapperInterface
     private $stockState;
     private $configurableType;
     private $imageHelper;
+    private $moduleManager;
 
     public function __construct(
         StoreManagerInterface $storeManager,
         Data $taxHelper,
         StockStateInterface $stockState,
         Configurable $configurableType,
-        Image $imageHelper
+        Image $imageHelper,
+        Manager $moduleManager
     ) {
         $this->storeManager = $storeManager;
         $this->taxHelper = $taxHelper;
         $this->stockState = $stockState;
         $this->configurableType = $configurableType;
         $this->imageHelper = $imageHelper;
+        $this->moduleManager = $moduleManager;
     }
 
     /**
@@ -100,6 +106,20 @@ class SimpleProductMapper implements ProductMapperInterface
 
     private function getStockQty(ProductInterface $product): int
     {
+        if ($this->moduleManager->isEnabled('Magento_Inventory')) {
+            $objectManager = ObjectManager::getInstance();
+            $stockState = $objectManager->get('\Magento\InventorySalesAdminUi\Model\GetSalableQuantityDataBySku');
+            $qty = $stockState->execute($product->getSku());
+
+            $ret = 0;
+            foreach ($qty as $q) {
+                $ret += $q['qty'];
+            }
+
+            ObjectManager::getInstance()->get(LoggerInterface::class)->info((string) $ret);
+            return $ret;
+        }
+
         return (int)$this->stockState->getStockQty($product->getId(), $product->getStore()->getWebsiteId());
     }
 }
