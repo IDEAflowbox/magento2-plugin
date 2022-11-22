@@ -44,7 +44,7 @@ class ConfigurableProductMapper implements ProductMapperInterface
             ->setId($mageProduct->getId())
             ->setUrl($mageProduct->getProductUrl())
             ->setNetPrice($this->getRegularPrice($mageProduct))
-            ->setImage($this->imageHelper->init($mageProduct, 'product_thumbnail_image')->getUrl())
+            ->setImage($this->getMediaBaseUrl() . 'pub/media/catalog/product' . $mageProduct->getImage())
             ->setGrossPrice($this->taxHelper->getTaxPrice($mageProduct, $this->getRegularPrice($mageProduct), true))
             ->setGrossSalePrice(
                 $this->getRegularPrice($mageProduct) !== $mageProduct->getFinalPrice() ? $mageProduct->getFinalPrice(

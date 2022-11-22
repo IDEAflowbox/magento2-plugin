@@ -54,7 +54,7 @@ class SimpleProductMapper implements ProductMapperInterface
             ->setId($mageProduct->getId())
             ->setUrl($mageProduct->getProductUrl())
             ->setNetPrice($this->getRegularPrice($mageProduct))
-            ->setImage($this->imageHelper->init($mageProduct, 'product_thumbnail_image')->getUrl())
+            ->setImage($this->getMediaBaseUrl() . 'pub/media/catalog/product' . $mageProduct->getImage())
             ->setGrossPrice($this->taxHelper->getTaxPrice($mageProduct, $this->getRegularPrice($mageProduct), true))
             ->setGrossSalePrice(
                 $this->getRegularPrice($mageProduct) !== $mageProduct->getFinalPrice(
@@ -102,6 +102,11 @@ class SimpleProductMapper implements ProductMapperInterface
     {
         $regularPrice = $product->getPriceInfo()->getPrice('regular_price');
         return $regularPrice->getValue();
+    }
+
+    private function getMediaBaseUrl()
+    {
+        return $this->storeManager->getStore()->getBaseUrl();
     }
 
     private function getStockQty(ProductInterface $product): int
