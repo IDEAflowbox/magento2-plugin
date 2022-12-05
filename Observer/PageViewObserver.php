@@ -80,7 +80,7 @@ class PageViewObserver implements ObserverInterface
                         Event::RECOMMENDATION_FRAME,
                         $this->uuidCookie->get(),
                         $id,
-                        $product->getCategoryIds()[0],
+                        isset($product->getCategoryIds()[0]) ? $product->getCategoryIds()[0] : null,
                         $product->getFinalPrice(),
                         null,
                         $request->getParam('frame_id') ?: null

@@ -66,7 +66,7 @@ class PurchaseCompleteObserver implements ObserverInterface
                     Event::PURCHASE,
                     $this->uuidCookie->get(),
                     $product->getId(),
-                    $product->getCategoryIds()[0],
+                    isset($product->getCategoryIds()[0]) ? $product->getCategoryIds()[0] : null,
                     $item->getPriceInclTax(),
                     $order->getQuoteId()
                 );

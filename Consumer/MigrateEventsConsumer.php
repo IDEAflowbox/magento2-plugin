@@ -121,7 +121,7 @@ class MigrateEventsConsumer
             Event::CART,
             $uuid,
             $orderItem->getProductId(),
-            $product->getCategoryId() ?: $product->getCategoryIds()[0],
+            $product->getCategoryId() ?: (isset($product->getCategoryIds()[0]) ? $product->getCategoryIds()[0] : null),
             $orderItem->getPriceInclTax() ?: $orderItem->getParentItem()->getPriceInclTax(),
             null,
             $order->getCreatedAt() ? new \DateTime($order->getCreatedAt()) : null
@@ -131,7 +131,7 @@ class MigrateEventsConsumer
             Event::PURCHASE,
             $uuid,
             $orderItem->getProductId(),
-            $product->getCategoryId() ?: $product->getCategoryIds()[0],
+            $product->getCategoryId() ?: (isset($product->getCategoryIds()[0]) ? $product->getCategoryIds()[0] : null),
             $orderItem->getPriceInclTax() ?: $orderItem->getParentItem()->getPriceInclTax(),
             $order->getQuoteId(),
             $order->getCreatedAt() ? new \DateTime($order->getCreatedAt()) : null
