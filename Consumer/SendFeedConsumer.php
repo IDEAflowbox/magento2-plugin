@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Omega\Cyberkonsultant\Consumer;
 
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Omega\Cyberkonsultant\Client\ApiClient;
 use Omega\Cyberkonsultant\Provider\AttributesProvider;
@@ -45,7 +46,7 @@ class SendFeedConsumer
 
             $collection = $this->collectionFactory->create();
             $collection->addAttributeToSelect('*');
-//            $collection->addAttributeToFilter(ProductInterface::VISIBILITY, ['in' => [3, 2, 4]]);
+            $collection->addAttributeToFilter(ProductInterface::VISIBILITY, Visibility::VISIBILITY_BOTH);
             $collection->addAttributeToFilter(ProductInterface::STATUS, 1);
             $collection->setPageSize(50);
 
