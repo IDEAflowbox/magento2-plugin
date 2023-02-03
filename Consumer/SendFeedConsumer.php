@@ -7,6 +7,7 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Omega\Cyberkonsultant\Client\ApiClient;
+use Omega\Cyberkonsultant\Helper\Configuration;
 use Omega\Cyberkonsultant\Provider\AttributesProvider;
 use Omega\Cyberkonsultant\Provider\CategoriesProvider;
 use Psr\Log\LoggerInterface;
@@ -18,19 +19,22 @@ class SendFeedConsumer
     private $categoriesProvider;
     private $apiClient;
     private $collectionFactory;
+    private $configuration;
 
     public function __construct(
         AttributesProvider $attributesProvider,
         CategoriesProvider $categoriesProvider,
         ApiClient          $apiClient,
         LoggerInterface    $logger,
-        CollectionFactory  $collectionFactory
+        CollectionFactory  $collectionFactory,
+        Configuration      $configuration
     ) {
         $this->attributesProvider = $attributesProvider;
         $this->categoriesProvider = $categoriesProvider;
         $this->apiClient = $apiClient;
         $this->logger = $logger;
         $this->collectionFactory = $collectionFactory;
+        $this->configuration = $configuration;
     }
 
     public function process($message)
@@ -45,6 +49,7 @@ class SendFeedConsumer
             $transactionId = $this->apiClient->beginProductsTransaction();
 
             $collection = $this->collectionFactory->create();
+            $collection->setStoreId($this->configuration->getGeneralConfig('store_id'));
             $collection->addAttributeToSelect('*');
             $collection->addAttributeToFilter(ProductInterface::VISIBILITY, Visibility::VISIBILITY_BOTH);
             $collection->addAttributeToFilter(ProductInterface::STATUS, 1);

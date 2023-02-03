@@ -11,17 +11,17 @@
             <resource>Omega_Cyberkonsultant::general_config</resource>
             <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>General Configuration</label>
-                <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Module Enable</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <field id="store_id" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Store ID</label>
+                    <source_model>Omega\Cyberkonsultant\Config\Source\StoreId</source_model>
                 </field>
                 <field id="api_host" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>API Host</label>
-                    <comment>Cyberkonsultant API host.</comment>
+                    <comment>IDEAflowbox API host.</comment>
                 </field>
                 <field id="api_key" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>API Key</label>
-                    <comment>Cyberkonsultant API key.</comment>
+                    <comment>IDEAflowbox API key.</comment>
                 </field>
                 <field id="send_feed" translate="button_label" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label/>
