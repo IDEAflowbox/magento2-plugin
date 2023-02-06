@@ -3,23 +3,21 @@ declare(strict_types=1);
 
 namespace Omega\Cyberkonsultant\Publisher;
 
-
-use Magento\Framework\MessageQueue\PublisherInterface;
+use Omega\Cyberkonsultant\Messenger\Dispatcher;
+use Omega\Cyberkonsultant\Messenger\Queue;
 use Omega\Cyberkonsultant\ValueObject\Event;
 
 class EventPublisher
 {
-    private const TOPIC_NAME = 'cyberkonsultant.track.events';
+    private $dispatcher;
 
-    private $publisher;
-
-    public function __construct(PublisherInterface $publisher)
+    public function __construct(Dispatcher $dispatcher)
     {
-        $this->publisher = $publisher;
+        $this->dispatcher = $dispatcher;
     }
 
     public function publish(Event $event): void
     {
-        $this->publisher->publish(self::TOPIC_NAME, $event);
+        $this->dispatcher->dispatch(new Queue($event->getDto(), 'events'));
     }
 }

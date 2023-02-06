@@ -2,6 +2,8 @@
 
 namespace Omega\Cyberkonsultant\ValueObject;
 
+use Cyberkonsultant\Builder\PageEventBuilder;
+
 class PageEvent
 {
     public const VIEW = 'view';
@@ -160,5 +162,30 @@ class PageEvent
             'frame_id' => $this->getFrameId(),
             'url' => $this->getUrl(),
         ];
+    }
+
+    /**
+     * @return \Cyberkonsultant\DTO\PageEvent
+     */
+    public function getDto(): \Cyberkonsultant\DTO\PageEvent
+    {
+        $builder = (new PageEventBuilder())
+            ->setUserId($this->getUserId())
+            ->setEventTime($this->getEventTime())
+            ->setType($this->getEventType());
+
+        if ($this->getProductId()) {
+            $builder->setProductId((string) $this->getProductId());
+        }
+
+        if ($this->getFrameId()) {
+            $builder->setFrameId($this->getFrameId());
+        }
+
+        if ($this->getUrl()) {
+            $builder->setUrl($this->getUrl());
+        }
+
+        return $builder->getResult();
     }
 }

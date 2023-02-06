@@ -4,4 +4,17 @@
     <table name="sales_order" resource="sales" engine="innodb" comment="Sales Order">
         <column xsi:type="datetime" nullable="true" name="migrated_to_ck_at"/>
     </table>
+
+    <table comment="idea_flowbox_messenger_messages Table" engine="innodb" name="idea_flowbox_messenger_messages" resource="default">
+        <column identity="true" name="id" nullable="false" unsigned="true" xsi:type="int"/>
+        <constraint referenceId="PRIMARY" xsi:type="primary">
+            <column name="id"/>
+        </constraint>
+        <column name="body" nullable="false" xsi:type="text"/>
+        <column name="queue_name" nullable="false" xsi:type="varchar"/>
+        <column name="queue_status" nullable="false" xsi:type="varchar"/>
+        <column name="failure_cause" nullable="true" xsi:type="text"/>
+        <column name="available_at" nullable="false" xsi:type="timestamp"/>
+        <column name="delivered_at" nullable="true" xsi:type="timestamp"/>
+    </table>
 </schema>

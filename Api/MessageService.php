@@ -7,7 +7,7 @@ class MessageService extends AbstractApiService
 {
     use NormalizeTrait;
 
-    private const DEFAULT_LIMIT = 1;
+    private const DEFAULT_LIMIT = 1000;
 
     /**
      * @return void
@@ -15,7 +15,7 @@ class MessageService extends AbstractApiService
      */
     public function getEvents()
     {
-        $this->getMessages('cyberkonsultant.track.events');
+        $this->getMessages('events');
     }
 
     /**
@@ -24,7 +24,7 @@ class MessageService extends AbstractApiService
      */
     public function getPageEvents()
     {
-        $this->getMessages('cyberkonsultant.track.page_events');
+        $this->getMessages('page_events');
     }
 
     /**
@@ -36,34 +36,22 @@ class MessageService extends AbstractApiService
     {
         $this->checkPermission();
         $limit = $this->getRequest()->get('limit', self::DEFAULT_LIMIT);
+        $limit = abs((int) $limit ?: 50);
+        $limit = $limit <= 1000 ? $limit : 1000;
 
         $connection = $this->resourceConnection->getConnection();
-        $qmTable = $connection->getTableName('queue_message');
-        $qmsTable = $connection->getTableName('queue_message_status');
+        $tableName = $connection->getTableName('idea_flowbox_messenger_messages');
 
-        $query = "Select * FROM ".$qmTable." qm LEFT JOIN ".$qmsTable." qms ON qms.message_id = qm.id  WHERE qms.status = 2 AND qm.topic_name='".$topic."'  ORDER BY qm.id ASC LIMIT ".$limit;
-        $result = $connection->fetchAll($query);
+        $result = $connection->fetchAll('SELECT * FROM ' . $tableName . ' WHERE queue_name=\''.$topic.'\' ORDER BY available_at ASC LIMIT '.$limit);
         $events = [];
         $ids = [];
         foreach ($result as $event) {
-            $e = json_decode($event['body']);
-            if (isset($e->type) && isset($e->uuid)) {
-                $events[] = [
-                    'user_id' => $e->uuid,
-                    'event_time' => isset($e->eventTime) ? $e->eventTime : (new \DateTime())->format(\DateTime::ATOM),
-                    'event_type' => $e->type,
-                    'product_id' => isset($e->productId) ? $e->productId : 0,
-                    'category_id' => isset($e->categoryId) ? $e->categoryId : 0,
-                    'cart_id' => isset($e->cartId) ? $e->cartId : null,
-                    'frame_id' => isset($e->frameId) ? $e->frameId : null,
-                    'price' => isset($e->price) ? $e->price : 0,
-                ];
-                $ids[] = $event['id'];
-            }
+            $events[] = $this->normalize(unserialize($event['body']));
+            $ids[] = $event['id'];
         }
 
         if (count($events)) {
-            $connection->query("UPDATE " . $qmsTable . " SET status=4 WHERE id IN (".join(',', $ids).")")->execute();
+            $connection->query("DELETE FROM " . $tableName . " WHERE id IN (".join(',', $ids).")")->execute();
         }
 
         return $this->jsonResponse([

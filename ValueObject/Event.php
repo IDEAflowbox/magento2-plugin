@@ -2,6 +2,8 @@
 
 namespace Omega\Cyberkonsultant\ValueObject;
 
+use Cyberkonsultant\Builder\EventBuilder;
+
 class Event
 {
     public const VIEW = 'view';
@@ -208,5 +210,38 @@ class Event
             'frameId' => $this->getFrameId(),
             'eventTime' => (new \DateTime())->format(\DateTime::ATOM),
         ];
+    }
+
+    /**
+     * @return \Cyberkonsultant\DTO\Event
+     */
+    public function getDto(): \Cyberkonsultant\DTO\Event
+    {
+        $builder = (new EventBuilder())
+            ->setType($this->getType())
+            ->setUserId($this->getUuid())
+            ->setEventTime(new \DateTime());
+
+        if ($this->getProductId()) {
+            $builder->setProductId((string) $this->getProductId());
+        }
+
+        if ($this->getCategoryId()) {
+            $builder->setCategoryId((string) $this->getCategoryId());
+        }
+
+        if (is_float($this->getPrice())) {
+            $builder->setPrice($this->getPrice());
+        }
+
+        if ($this->getCartId()) {
+            $builder->setCartId((string) $this->getCartId());
+        }
+
+        if ($this->getFrameId()) {
+            $builder->setFrameId($this->getFrameId());
+        }
+
+        return $builder->getResult();
     }
 }
