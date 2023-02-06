@@ -54,7 +54,7 @@ class MessageService extends AbstractApiService
         }
 
         return $this->jsonResponse([
-            'limit' => $limit,
+            'limit' => (int) $limit,
             'data' => $events,
         ]);
     }
