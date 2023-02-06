@@ -9,7 +9,9 @@ use Magento\Framework\Event\ObserverInterface;
 use Omega\Cyberkonsultant\Client\ApiClient;
 use Omega\Cyberkonsultant\Cookie\UuidCookie;
 use Omega\Cyberkonsultant\Publisher\EventPublisher;
+use Omega\Cyberkonsultant\Publisher\PageEventPublisher;
 use Omega\Cyberkonsultant\ValueObject\Event;
+use Omega\Cyberkonsultant\ValueObject\PageEvent;
 use Psr\Log\LoggerInterface;
 
 class PageViewObserver implements ObserverInterface
@@ -35,6 +37,11 @@ class PageViewObserver implements ObserverInterface
     private $publisher;
 
     /**
+     * @var PageEventPublisher
+     */
+    private $pageEventPublisher;
+
+    /**
      * @var ProductRepositoryInterface
      */
     private $productRepository;
@@ -44,12 +51,14 @@ class PageViewObserver implements ObserverInterface
         UuidCookie                 $uuidCookie,
         LoggerInterface            $logger,
         EventPublisher             $publisher,
+        PageEventPublisher         $pageEventPublisher,
         ProductRepositoryInterface $productRepository
     ) {
         $this->apiClient = $apiClient;
         $this->uuidCookie = $uuidCookie;
         $this->logger = $logger;
         $this->publisher = $publisher;
+        $this->pageEventPublisher = $pageEventPublisher;
         $this->productRepository = $productRepository;
     }
 
@@ -72,8 +81,10 @@ class PageViewObserver implements ObserverInterface
         }
 
         try {
+            $frameId = $request->getQuery()->get('frame_id');
+            $id = (int)$request->getParam('id');
+
             if ($request->getQuery()->get('source') === 'recommendation_frame') {
-                $id = (int)$request->getParam('id');
                 if ($id) {
                     $product = $this->productRepository->getById($id);
                     $event = new Event(
@@ -89,7 +100,15 @@ class PageViewObserver implements ObserverInterface
                 }
             }
 
-            $this->apiClient->trackCrmEvent($this->uuidCookie->get(), 'view', $request->getURI()->toString());
+            $pageEvent = new PageEvent(
+                $this->uuidCookie->get(),
+                new \DateTime(),
+                PageEvent::VIEW,
+                $id ?: null,
+                $frameId,
+                $request->getURI()->toString()
+            );
+            $this->pageEventPublisher->publish($pageEvent);
         } catch (\Exception $e) {
             $this->logger->error($e);
         }

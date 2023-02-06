@@ -206,6 +206,7 @@ class Event
             'categoryId' => $this->getCategoryId(),
             'price' => $this->getPrice(),
             'frameId' => $this->getFrameId(),
+            'eventTime' => (new \DateTime())->format(\DateTime::ATOM),
         ];
     }
 }

@@ -23,6 +23,9 @@
                     <label>API Key</label>
                     <comment>IDEAflowbox API key.</comment>
                 </field>
+                <field id="remote_command_secret" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Remote Command Secret</label>
+                </field>
                 <field id="send_feed" translate="button_label" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label/>
                     <button_label>Send Feed</button_label>
