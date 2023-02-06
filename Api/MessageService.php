@@ -9,16 +9,29 @@ class MessageService extends AbstractApiService
 
     private const DEFAULT_LIMIT = 1;
 
+    /**
+     * @return void
+     * @throws \Zend_Db_Statement_Exception
+     */
     public function getEvents()
     {
         $this->getMessages('cyberkonsultant.track.events');
     }
 
+    /**
+     * @return void
+     * @throws \Zend_Db_Statement_Exception
+     */
     public function getPageEvents()
     {
         $this->getMessages('cyberkonsultant.track.page_events');
     }
 
+    /**
+     * @param string $topic
+     * @return null
+     * @throws \Zend_Db_Statement_Exception
+     */
     private function getMessages(string $topic)
     {
         $this->checkPermission();

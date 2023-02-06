@@ -22,6 +22,16 @@ abstract class AbstractApiService
     protected $productMapper;
     protected $configuration;
 
+    /**
+     * @param CategoriesProvider $categoriesProvider
+     * @param CategoryMapper $categoryMapper
+     * @param AttributesProvider $attributesProvider
+     * @param AttributeMapper $attributeMapper
+     * @param ResourceConnection $resourceConnection
+     * @param CollectionFactory $collectionFactory
+     * @param ProductMapper $productMapper
+     * @param Configuration $configuration
+     */
     public function __construct(
         CategoriesProvider $categoriesProvider,
         CategoryMapper $categoryMapper,
@@ -50,6 +60,9 @@ abstract class AbstractApiService
         return Request::createFromGlobals();
     }
 
+    /**
+     * @return void
+     */
     public function checkPermission()
     {
         $secret = base64_decode($this->configuration->getGeneralConfig('remote_command_secret'));
@@ -63,6 +76,11 @@ abstract class AbstractApiService
         }
     }
 
+    /**
+     * @param $data
+     * @param $statusCode
+     * @return void
+     */
     public function jsonResponse($data, $statusCode = 200)
     {
         header_remove();

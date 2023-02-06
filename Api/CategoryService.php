@@ -7,6 +7,10 @@ class CategoryService extends AbstractApiService
 {
     use NormalizeTrait;
 
+    /**
+     * @return null
+     * @throws \ReflectionException
+     */
     public function getList()
     {
         $this->checkPermission();
