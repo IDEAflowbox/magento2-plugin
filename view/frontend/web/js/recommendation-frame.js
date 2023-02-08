@@ -1,6 +1,6 @@
 define([
   'jquery',
-  'ideaflowbox_slider',
+  'ideaflowboxSlider',
 ], function ($, Flowbox) {
   "use strict";
 
