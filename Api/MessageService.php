@@ -42,7 +42,7 @@ class MessageService extends AbstractApiService
         $connection = $this->resourceConnection->getConnection();
         $tableName = $connection->getTableName('idea_flowbox_messenger_messages');
 
-        $result = $connection->fetchAll('SELECT * FROM ' . $tableName . ' WHERE queue_name=\''.$topic.'\' ORDER BY available_at ASC LIMIT '.$limit);
+        $result = $connection->fetchAll('SELECT * FROM ' . $tableName . ' WHERE queue_name=\''.$topic.'\' and queue_status=\'unacked\' ORDER BY available_at ASC LIMIT '.$limit);
         $events = [];
         $ids = [];
         foreach ($result as $event) {
@@ -51,8 +51,12 @@ class MessageService extends AbstractApiService
         }
 
         if (count($events)) {
-            $connection->query("DELETE FROM " . $tableName . " WHERE id IN (".join(',', $ids).")")->execute();
+            $connection->query("UPDATE " . $tableName . " SET queue_status='acked' WHERE id IN (".join(',', $ids).")")->execute();
         }
+
+        // keep acked messages for 7 days
+        $date = (new \DateTime())->sub(new \DateInterval('P7D'));
+        $connection->query("DELETE FROM " . $tableName . " WHERE queue_status='acked' and available_at <= '" . $date->format(\DateTimeInterface::ATOM) . "'")->execute();
 
         return $this->jsonResponse([
             'limit' => (int) $limit,

@@ -14,7 +14,7 @@
         <column name="queue_name" nullable="false" xsi:type="varchar"/>
         <column name="queue_status" nullable="false" xsi:type="varchar"/>
         <column name="failure_cause" nullable="true" xsi:type="text"/>
-        <column name="available_at" nullable="false" xsi:type="timestamp"/>
+        <column name="available_at" nullable="true" xsi:type="timestamp"/>
         <column name="delivered_at" nullable="true" xsi:type="timestamp"/>
     </table>
 </schema>
