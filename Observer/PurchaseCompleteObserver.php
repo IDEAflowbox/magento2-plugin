@@ -68,7 +68,9 @@ class PurchaseCompleteObserver implements ObserverInterface
                     $product->getId(),
                     isset($product->getCategoryIds()[0]) ? $product->getCategoryIds()[0] : null,
                     $item->getPriceInclTax(),
-                    $order->getQuoteId()
+                    $order->getQuoteId(),
+                    null,
+                    (int) $item->getQtyOrdered()
                 );
                 $this->publisher->publish($event);
             }

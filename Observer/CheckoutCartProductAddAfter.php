@@ -51,7 +51,10 @@ class CheckoutCartProductAddAfter implements ObserverInterface
                 $this->uuidCookie->get(),
                 $product->getId(),
                 isset($product->getCategoryIds()[0]) ? $product->getCategoryIds()[0] : null,
-                $product->getPrice()
+                $product->getPrice(),
+                null,
+                null,
+                (int) $item->getQty()
             );
             $this->publisher->publish($event);
         } catch (\Exception $e) {

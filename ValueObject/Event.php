@@ -48,12 +48,19 @@ class Event
     private $frameId;
 
     /**
+     * @var int|null
+     */
+    private $quantity;
+
+    /**
      * @param string $type
      * @param string $uuid
      * @param int|null $productId
      * @param int|null $categoryId
      * @param float|null $price
      * @param int|null $cartId
+     * @param string|null $frameId
+     * @param int $quantity
      */
     public function __construct(
         string  $type,
@@ -62,7 +69,8 @@ class Event
         ?int    $categoryId = null,
         ?float  $price = null,
         ?int    $cartId = null,
-        ?string $frameId = null
+        ?string $frameId = null,
+        int    $quantity = 1
     ) {
         $this->type = $type;
         $this->uuid = $uuid;
@@ -71,6 +79,7 @@ class Event
         $this->price = $price;
         $this->cartId = $cartId;
         $this->frameId = $frameId;
+        $this->quantity = $quantity;
     }
 
     /**
@@ -220,7 +229,8 @@ class Event
         $builder = (new EventBuilder())
             ->setType($this->getType())
             ->setUserId($this->getUuid())
-            ->setEventTime(new \DateTime());
+            ->setEventTime(new \DateTime())
+            ->setQuantity($this->quantity);
 
         if ($this->getProductId()) {
             $builder->setProductId((string) $this->getProductId());
