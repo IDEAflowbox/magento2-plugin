@@ -23,6 +23,7 @@ class ProductService extends AbstractApiService
         $collection->addAttributeToFilter(ProductInterface::VISIBILITY, Visibility::VISIBILITY_BOTH);
         $collection->addAttributeToFilter(ProductInterface::STATUS, 1);
         $collection->setPageSize(50);
+        $collection->addStoreFilter($this->configuration->getGeneralConfig('store_id'));
         $collection->setCurPage($currentPage);
 
         $data = [];
