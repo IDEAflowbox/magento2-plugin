@@ -53,6 +53,11 @@ class Event
     private $quantity;
 
     /**
+     * @var string|null
+     */
+    private $orderId;
+
+    /**
      * @param string $type
      * @param string $uuid
      * @param int|null $productId
@@ -70,7 +75,8 @@ class Event
         ?float  $price = null,
         ?int    $cartId = null,
         ?string $frameId = null,
-        int    $quantity = 1
+        int    $quantity = 1,
+        ?string $orderId = null
     ) {
         $this->type = $type;
         $this->uuid = $uuid;
@@ -80,6 +86,7 @@ class Event
         $this->cartId = $cartId;
         $this->frameId = $frameId;
         $this->quantity = $quantity;
+        $this->orderId = $orderId;
     }
 
     /**
@@ -208,6 +215,24 @@ class Event
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getOrderId(): ?string
+    {
+        return $this->orderId;
+    }
+
+    /**
+     * @param string|null $orderId
+     * @return Event
+     */
+    public function setOrderId(?string $orderId): Event
+    {
+        $this->orderId = $orderId;
+        return $this;
+    }
+
     public function __toArray(): array
     {
         return [
@@ -217,6 +242,7 @@ class Event
             'categoryId' => $this->getCategoryId(),
             'price' => $this->getPrice(),
             'frameId' => $this->getFrameId(),
+            'orderId' => $this->getOrderId(),
             'eventTime' => (new \DateTime())->format(\DateTime::ATOM),
         ];
     }
@@ -250,6 +276,10 @@ class Event
 
         if ($this->getFrameId()) {
             $builder->setFrameId($this->getFrameId());
+        }
+
+        if ($this->getOrderId()) {
+            $builder->setOrderId($this->getOrderId());
         }
 
         return $builder->getResult();

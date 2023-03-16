@@ -70,7 +70,8 @@ class PurchaseCompleteObserver implements ObserverInterface
                     $item->getPriceInclTax(),
                     $order->getQuoteId(),
                     null,
-                    (int) $item->getQty()
+                    (int) $item->getQty(),
+                    $order->getIncrementId()
                 );
                 $this->publisher->publish($event);
             }
